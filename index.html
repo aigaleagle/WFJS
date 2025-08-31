@@ -1,29 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <head>
   <meta charset="UTF-8" />
   <title>Shri Aigal Weather Forecasting Project</title>
 
   <meta name="description" content="Weather Forecasting Project (wfjs) by Shri Aigal (A S Shridatta Aigal, A M Subraya Aigal, Revathi). Final year BCA project using HTML, CSS, JavaScript, REST API, OpenWeatherMap API.">
-  
   <meta name="keywords" content="shri aigal, SHRI AIGAL, A S Shridatta Aigal, Aigal, A M Subraya Aigal, Revathi, wfjs, weather forecasting, weather dashboard, HTML CSS JavaScript project, OpenWeatherMap API, REST API integration, frontend development, responsive design, weather web app, final year BCA project, BCA Projects, weather forecasting project using HTML CSS JS" />
-
-  <!-- Open Graph for social sharing -->
   <meta property="og:title" content="Weather Forecasting Project by Shri Aigal | BCA Final Year Project" />
   <meta property="og:description" content="WFJS — A modern weather forecasting web app using HTML, CSS, JavaScript, OpenWeatherMap API. Developed by Shri Aigal (A S Shridatta Aigal, Revathi, A M Subraya Aigal) for BCA final year." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="URL_TO_YOUR_PROJECT_IMAGE.png" />
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-  
-  <title>Weather Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-<style>
+  <style>
     body {
         font-family: 'Segoe UI', sans-serif;
         background-color: #eef6fb;
@@ -51,9 +42,7 @@
         cursor: pointer;
         transition: background 0.3s;
     }
-    button:hover {
-        background-color: #306acb;
-    }
+    button:hover { background-color: #306acb; }
     #cardContainer {
         display: flex;
         flex-wrap: wrap;
@@ -70,69 +59,24 @@
         text-align: center;
         transition: transform 0.3s;
     }
-    .weather-card:hover {
-        transform: scale(1.05);
+    .weather-card:hover { transform: scale(1.05); }
+    .weather-card img { width: 50px; height: 50px; }
+
+    /* Chart containers */
+    .chart-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 25px;
     }
-    .weather-card img {
-        width: 50px;
-        height: 50px;
-    }
-    canvas {
-        margin-top: 20px;
+    .chart-box {
         background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 10px;
-        max-width: 100%;
-        height: auto;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-
-    /* ---------------- Responsive Media Queries ---------------- */
-
-    /* Large screens (≥1200px) */
-    @media (max-width: 1200px) {
-        h1 { font-size: 1.8em; }
-        .weather-card { width: 140px; }
-    }
-
-    /* Tablets landscape (≤992px) */
-    @media (max-width: 992px) {
-        .weather-card { width: 130px; }
-        canvas { width: 90%; }
-    }
-
-    /* Tablets portrait (≤768px) */
-    @media (max-width: 768px) {
-        h1 { font-size: 1.5em; }
-        button { padding: 8px 14px; font-size: 0.9em; }
-        .weather-card { width: 120px; }
-        canvas { width: 100%; }
-    }
-
-    /* Mobile (≤576px) */
-    @media (max-width: 576px) {
-        #cardContainer {
-            flex-direction: column;
-            align-items: center;
-        }
-        .weather-card {
-            width: 90%;   /* ✅ instead of 120% */
-        }
-        button {
-            width: 95%;
-            font-size: 0.95em;
-        }
-        canvas {
-            width: 95%;
-        }
-    }
-
-    /* Extra small (≤400px) */
-    @media (max-width: 400px) {
-        h1 { font-size: 1.3em; }
-        .weather-card { width: 95%; }
-        button { width: 100%; }
-        canvas { width: 100%; }
+    @media(max-width: 768px){
+      .chart-wrapper { grid-template-columns: 1fr; }
     }
 
     footer {
@@ -143,15 +87,8 @@
         font-size: 1em;
         text-align: center;
     }
-    footer .dev-link {
-        text-decoration: none;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    footer .dev-link:hover {
-        color: #ffd700;
-    }
-
+    footer .dev-link { cursor: pointer; font-weight: bold; }
+    footer .dev-link:hover { color: #ffd700; }
     .modal {
         display: none;
         position: fixed;
@@ -176,13 +113,82 @@
         font-size: 20px;
         color: #333;
     }
-    a {
-        text-decoration: none;
-        color: #0066cc;
-    }
-    a:hover { text-decoration: underline; }
-</style>
 
+
+
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #f5f5f5;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.chart-box {
+  flex: 1;
+  min-width: 400px;
+
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Chart canvas should be responsive */
+.chart-box canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ✅ Tablet view (601px – 1024px) */
+@media (max-width: 1024px) {
+  .chart-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-box {
+    width: 80%;
+    min-width: unset;
+    margin: 0 auto;
+  }
+}
+
+/* ✅ Mobile view (≤600px) */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .chart-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chart-box {
+    width: 100%;
+    max-width: 350px;   /* keeps chart nicely centered */
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto;
+  }
+
+  .chart-box canvas {
+    height: 220px !important;
+  }
+}
+  </style>
 </head>
 <body>
 
@@ -193,282 +199,194 @@
     <button onclick="loadForecast()">Future 5-Day Forecast</button>
   </div>
   <div id="cardContainer"></div>
-  <canvas id="weatherChart" width="600" height="400"></canvas>
 
-  <script>
+  <!-- Two separate graphs -->
+  <div class="chart-wrapper">
+    <div class="chart-box">
+      <h2>Temperature Forecast (°C)</h2>
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>Rain Probability (%)</h2>
+      <canvas id="rainChart"></canvas>
+    </div>
+  </div>
 
-  const API_KEY = 'f34c742159778db7dfc203789a8ae285'; // your OpenWeather key
-  let lat, lon;
-  const canvas = document.getElementById('weatherChart');
-  const ctx = canvas.getContext('2d');
-  let chart;
+<script>
+const API_KEY = 'f34c742159778db7dfc203789a8ae285'; // your OpenWeather key
+let lat, lon;
+let tempChart, rainChart;
 
-  // ---------- Helpers ----------
-  const colorFor = (desc = '') => {
-    const d = desc.toLowerCase();
-    if (d.includes('thunder')) return 'rgba(0, 82, 204, 1)';
-    if (d.includes('rain') || d.includes('drizzle')) return 'rgba(30,144,255,1)'; // blue
-    if (d.includes('snow')) return 'rgba(135,206,250,1)'; // light blue
-    if (d.includes('cloud')) return 'rgba(128,128,128,1)'; // gray
-    if (d.includes('clear')) return 'rgba(255,165,0,1)'; // orange
-    if (d.includes('mist') || d.includes('fog') || d.includes('haze')) return 'rgba(186,85,211,1)';
-    return 'rgba(46, 204, 113, 1)'; // default green
-  };
+// ---------- Helpers ----------
+function displayCards(data) {
+  const container = document.getElementById('cardContainer');
+  container.innerHTML = '';
+  data.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'weather-card';
+    card.innerHTML = `
+      <p><strong>${d.date}</strong></p>
+      <p>${d.time || ''}</p>
+      <img src="https://openweathermap.org/img/wn/${d.icon}@2x.png" alt="icon">
+      <p>${d.temp}°C</p>
+      <p>${d.desc}</p>
+      ${d.rainChance !== undefined ? `<p>💧 ${d.rainChance}% rain</p>` : ""}
+    `;
+    container.appendChild(card);
+  });
+}
 
-  const emojiFor = (desc = '') => {
-    const d = desc.toLowerCase();
-    if (d.includes('thunder')) return '⛈️';
-    if (d.includes('rain') || d.includes('drizzle')) return '🌧️';
-    if (d.includes('snow')) return '❄️';
-    if (d.includes('cloud')) return '☁️';
-    if (d.includes('clear')) return '☀️';
-    if (d.includes('mist') || d.includes('fog') || d.includes('haze')) return '🌫️';
-    return '🌡️';
-  };
+// ---------- Charts ----------
+function drawCharts(labels, temps, rainChances, weatherLabel) {
+  if (tempChart) tempChart.destroy();
+  if (rainChart) rainChart.destroy();
 
-function drawChart(labels, temps, weather, label) {
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: 'line',
+  // Temperature Line Graph
+  tempChart = new Chart(document.getElementById("tempChart"), {
+    type: "line",
     data: {
-      labels,
+      labels: labels,
       datasets: [{
-        label,
+        label: "Temperature (°C)",
         data: temps,
-        borderWidth: 2,
-        borderColor: '#1e88e5',
-        backgroundColor: 'rgba(30,136,229,0.15)',
+        borderColor: "#ff9800",
+        backgroundColor: "rgba(255,152,0,0.2)",
+        tension: 0.3,
         fill: true,
-        tension: 0.35,
-        pointRadius: 8,
-        pointHoverRadius: 10,
-        pointBackgroundColor: weather.map(w => {
-          if (w.toLowerCase().includes("rain")) return "blue";
-          if (w.toLowerCase().includes("clear")) return "orange";
-          if (w.toLowerCase().includes("cloud")) return "gray";
-          if (w.toLowerCase().includes("snow")) return "lightblue";
-          return "green";
-        }),
-        pointStyle: weather.map(w => {
-          if (w.toLowerCase().includes("rain")) return "triangle";
-          if (w.toLowerCase().includes("clear")) return "circle";
-          if (w.toLowerCase().includes("cloud")) return "rect";
-          if (w.toLowerCase().includes("snow")) return "star";
-          return "rectRot";
-        })
+        pointRadius: 5,
+        pointHoverRadius: 7
       }]
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: true, position: 'top' },
-        tooltip: {
-          usePointStyle: true,
-          callbacks: {
-            title: (items) => {
-              const i = items[0].dataIndex;
-              return labels[i] + " (" + weather[i] + ")";
-            },
-            label: (ctx) => {
-              return ctx.parsed.y + "°C";
-            }
-          }
-        }
-      },
+      plugins: { legend: { labels: { color: "#333" } } },
       scales: {
-        x: {
-          title: { display: true, text: 'Time / Date' },
-          ticks: {
-            callback: function(value, index) {
-              const w = weather[index].toLowerCase();
-              if (w.includes("rain")) return "🌧️ " + labels[index];
-              if (w.includes("clear")) return "☀️ " + labels[index];
-              if (w.includes("cloud")) return "☁️ " + labels[index];
-              if (w.includes("snow")) return "❄️ " + labels[index];
-              return "🌡️ " + labels[index];
-            },
-            autoSkip: true,
-            maxRotation: 0
-          }
-        },
+        x: { ticks: { color: "#333" } },
+        y: { ticks: { color: "#333" } }
+      }
+    }
+  });
+
+  // Rain Probability Bar Graph
+  rainChart = new Chart(document.getElementById("rainChart"), {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Rain % Chance",
+        data: rainChances,
+        backgroundColor: "rgba(30,136,229,0.6)",
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: "#333" } } },
+      scales: {
+        x: { ticks: { color: "#333" } },
         y: {
-          title: { display: true, text: 'Temperature (°C)' }
+          ticks: { color: "#333", callback: v => v + "%" },
+          beginAtZero: true,
+          max: 100
         }
       }
     }
   });
 }
 
-
-  function displayCards(data) {
-    const container = document.getElementById('cardContainer');
-    container.innerHTML = '';
-    data.forEach(d => {
-      const card = document.createElement('div');
-      card.className = 'weather-card';
-      card.innerHTML = `
-        <p><strong>${d.date}</strong></p>
-        <p>${d.time || ''}</p>
-        <img src="https://openweathermap.org/img/wn/${d.icon}@2x.png" alt="icon">
-        <p>${d.temp}°C</p>
-        <p>${d.desc}</p>
-      `;
-      container.appendChild(card);
-    });
+// ---------- Today ----------
+function loadToday() {
+  if (lat == null || lon == null) {
+    document.getElementById('status').innerText = 'Waiting for location...';
+    return;
   }
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-  function loadToday() {
-    if (lat == null || lon == null) {
-      document.getElementById('status').innerText = 'Waiting for location...';
-      return;
-    }
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.list || !data.list.length) {
-          throw new Error('No forecast data returned.');
-        }
-
-        const slice = Math.min(8, data.list.length); // next ~24h
-        const today = [];
-        const weatherCount = {};
-
-        for (let i = 0; i < slice; i++) {
-          const item = data.list[i];
-          const dt = new Date(item.dt_txt);
-          const rawDesc = (item.weather && item.weather[0] && item.weather[0].description) || '';
-          const desc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
-
-          weatherCount[desc] = (weatherCount[desc] || 0) + 1;
-
-          today.push({
-            date: dt.toLocaleDateString('en-IN'),
-            time: dt.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }),
-            temp: item.main.temp,
-            icon: item.weather[0].icon,
-            desc
-          });
-        }
-
-        displayCards(today);
-        drawChart(
-          today.map(d => d.time),
-          today.map(d => d.temp),
-          today.map(d => d.desc),
-          "Today's Hourly Weather"
-        );
-
-        // Summary %
-        const total = Object.values(weatherCount).reduce((a, b) => a + b, 0) || 1;
-        let summaryText = '<h3>Today\'s Weather Summary:</h3>';
-        for (const [desc, count] of Object.entries(weatherCount)) {
-          const percent = ((count / total) * 100).toFixed(0);
-          summaryText += `<p>${desc}: ${percent}%</p>`;
-        }
-        document.getElementById('status').innerHTML = summaryText;
-
-        // Debug (visible in console if needed)
-        console.log('Today labels:', today.map(d => d.time));
-        console.log('Today temps:', today.map(d => d.temp));
-        console.log('Today weather:', today.map(d => d.desc));
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('status').innerText = 'Error loading today: ' + err.message;
-      });
-  }
-
-  function loadForecast() {
-    if (lat == null || lon == null) {
-      document.getElementById('status').innerText = 'Waiting for location...';
-      return;
-    }
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.list || !data.list.length) {
-          throw new Error('No forecast data returned.');
-        }
-
-        // Pick one entry per day (earliest occurrence), up to 5 days
-        const byDate = {};
-        for (const item of data.list) {
-          const dateKey = new Date(item.dt_txt).toLocaleDateString('en-IN');
-          if (!byDate[dateKey]) byDate[dateKey] = item;
-        }
-
-        const forecast = Object.entries(byDate)
-          .slice(0, 5)
-          .map(([dateKey, item]) => {
-            const rawDesc = (item.weather && item.weather[0] && item.weather[0].description) || '';
-            const desc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
-            return {
-              date: dateKey,
-              temp: item.main.temp,
-              icon: item.weather[0].icon,
-              desc
-            };
-          });
-
-        displayCards(forecast);
-        drawChart(
-          forecast.map(d => d.date),
-          forecast.map(d => d.temp),
-          forecast.map(d => d.desc),
-          '5-Day Forecast'
-        );
-        document.getElementById('status').innerText = '5-Day Forecast loaded.';
-
-        // Debug
-        console.log('Forecast labels:', forecast.map(d => d.date));
-        console.log('Forecast temps:', forecast.map(d => d.temp));
-        console.log('Forecast weather:', forecast.map(d => d.desc));
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('status').innerText = 'Error loading forecast: ' + err.message;
-      });
-  }
-
-  // ---------- Geolocation flow ----------
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        lat = pos.coords.latitude;
-        lon = pos.coords.longitude;
-        document.getElementById('status').innerText = 'Location detected! Loading today\'s weather...';
-        loadToday();
-      },
-      err => {
-        console.warn(err);
-        document.getElementById('status').innerText = 'Location access denied.';
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const slice = Math.min(8, data.list.length);
+      const today = [];
+      for (let i = 0; i < slice; i++) {
+        const item = data.list[i];
+        const dt = new Date(item.dt_txt);
+        const rawDesc = item.weather[0]?.description || '';
+        const desc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
+        today.push({
+          date: dt.toLocaleDateString('en-IN'),
+          time: dt.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }),
+          temp: item.main.temp,
+          icon: item.weather[0].icon,
+          desc,
+          rainChance: item.pop !== undefined ? (item.pop * 100).toFixed(0) : 0
+        });
       }
-    );
-  } else {
-    document.getElementById('status').innerText = 'Geolocation not supported.';
-  }
+      displayCards(today);
+      drawCharts(
+        today.map(d => d.time),
+        today.map(d => d.temp),
+        today.map(d => d.rainChance),
+        "Today's Hourly Weather"
+      );
+      document.getElementById('status').innerText = "Today's hourly forecast loaded.";
+    });
+}
 
-  // Expose functions to buttons
-  window.loadToday = loadToday;
-  window.loadForecast = loadForecast;
+// ---------- Forecast ----------
+function loadForecast() {
+  if (lat == null || lon == null) {
+    document.getElementById('status').innerText = 'Waiting for location...';
+    return;
+  }
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
-  // ---------- Developer modal ----------
-  function showDeveloperInfo() {
-    document.getElementById('devModal').style.display = 'block';
-  }
-  function closeDeveloperInfo() {
-    document.getElementById('devModal').style.display = 'none';
-  }
-  window.showDeveloperInfo = showDeveloperInfo;
-  window.closeDeveloperInfo = closeDeveloperInfo;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const byDate = {};
+      for (const item of data.list) {
+        const dateKey = new Date(item.dt_txt).toLocaleDateString('en-IN');
+        if (!byDate[dateKey]) byDate[dateKey] = item;
+      }
+      const forecast = Object.entries(byDate).slice(0, 5).map(([dateKey, item]) => {
+        const rawDesc = item.weather[0]?.description || '';
+        const desc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
+        return {
+          date: dateKey,
+          temp: item.main.temp,
+          rainChance: item.pop !== undefined ? (item.pop * 100).toFixed(0) : 0,
+          icon: item.weather[0].icon,
+          desc
+        };
+      });
+      displayCards(forecast);
+      drawCharts(
+        forecast.map(d => d.date),
+        forecast.map(d => d.temp),
+        forecast.map(d => d.rainChance),
+        "5-Day Forecast"
+      );
+      document.getElementById('status').innerText = "5-Day forecast loaded.";
+    });
+}
+
+// ---------- Geolocation ----------
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+      document.getElementById('status').innerText = 'Location detected! Loading today\'s weather...';
+      loadToday();
+    },
+    err => {
+      document.getElementById('status').innerText = 'Location access denied.';
+    }
+  );
+} else {
+  document.getElementById('status').innerText = 'Geolocation not supported.';
+}
 </script>
-
-
 
   <footer>
     @2025 Weather Forecasting<br>Developed by:
@@ -489,5 +407,13 @@ function drawChart(labels, temps, weather, label) {
     </div>
   </div>
 
+<script>
+function showDeveloperInfo() {
+  document.getElementById('devModal').style.display = 'block';
+}
+function closeDeveloperInfo() {
+  document.getElementById('devModal').style.display = 'none';
+}
+</script>
 </body>
 </html>
