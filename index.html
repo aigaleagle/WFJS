@@ -114,80 +114,62 @@
         color: #333;
     }
 
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #000000;
+    }
 
+    .chart-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
+    .chart-box {
+      flex: 1;
+      min-width: 400px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #000000;
-}
+    .chart-box canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
 
-.chart-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 20px;
-}
+    @media (max-width: 1024px) {
+      .chart-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .chart-box {
+        width: 80%;
+        min-width: unset;
+        margin: 0 auto;
+      }
+    }
 
-.chart-box {
-  flex: 1;
-  min-width: 400px;
-
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-
-/* Chart canvas should be responsive */
-.chart-box canvas {
-  width: 100% !important;
-  height: auto !important;
-}
-
-/* ✅ Tablet view (601px – 1024px) */
-@media (max-width: 1024px) {
-  .chart-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .chart-box {
-    width: 80%;
-    min-width: unset;
-    margin: 0 auto;
-  }
-}
-
-/* ✅ Mobile view (≤600px) */
-@media (max-width: 600px) {
-  body {
-    padding: 10px;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-
-  .chart-container {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .chart-box {
-    width: 100%;
-    max-width: 350px;   /* keeps chart nicely centered */
-    padding: 15px;
-    border-radius: 12px;
-    margin: 0 auto;
-  }
-
-  .chart-box canvas {
-    height: 220px !important;
-  }
-}
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      h2 { font-size: 18px; }
+      .chart-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .chart-box {
+        width: 100%;
+        max-width: 350px;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 0 auto;
+      }
+      .chart-box canvas { height: 220px !important; }
+    }
   </style>
 </head>
 <body>
@@ -200,24 +182,22 @@ h2 {
   </div>
   <div id="cardContainer"></div>
 
-  <!-- Two separate graphs -->
   <div class="chart-wrapper">
     <div class="chart-box">
       <h2>Temperature Forecast (°C)</h2>
       <canvas id="tempChart"></canvas>
     </div>
     <div class="chart-box">
-      <h2>Rain Probability (%)</h2>
+      <h2>Rainfall Forecast (mm)</h2>
       <canvas id="rainChart"></canvas>
     </div>
   </div>
 
 <script>
-const API_KEY = 'f34c742159778db7dfc203789a8ae285'; // your OpenWeather key
-let lat, lon;
+const API_KEY = 'f34c742159778db7dfc203789a8ae285';
+let lat, lon, cityName;
 let tempChart, rainChart;
 
-// ---------- Helpers ----------
 function displayCards(data) {
   const container = document.getElementById('cardContainer');
   container.innerHTML = '';
@@ -230,18 +210,16 @@ function displayCards(data) {
       <img src="https://openweathermap.org/img/wn/${d.icon}@2x.png" alt="icon">
       <p>${d.temp}°C</p>
       <p>${d.desc}</p>
-      ${d.rainChance !== undefined ? `<p>💧 ${d.rainChance}% rain</p>` : ""}
+      ${d.rainMm !== undefined ? `<p>💧 ${d.rainMm} mm</p>` : ""}
     `;
     container.appendChild(card);
   });
 }
 
-// ---------- Charts ----------
-function drawCharts(labels, temps, rainChances, weatherLabel) {
+function drawCharts(labels, temps, rains) {
   if (tempChart) tempChart.destroy();
   if (rainChart) rainChart.destroy();
 
-  // Temperature Line Graph
   tempChart = new Chart(document.getElementById("tempChart"), {
     type: "line",
     data: {
@@ -267,14 +245,13 @@ function drawCharts(labels, temps, rainChances, weatherLabel) {
     }
   });
 
-  // Rain Probability Bar Graph
   rainChart = new Chart(document.getElementById("rainChart"), {
     type: "bar",
     data: {
       labels: labels,
       datasets: [{
-        label: "Rain % Chance",
-        data: rainChances,
+        label: "Rainfall (mm)",
+        data: rains,
         backgroundColor: "rgba(30,136,229,0.6)",
         borderRadius: 6
       }]
@@ -285,18 +262,16 @@ function drawCharts(labels, temps, rainChances, weatherLabel) {
       scales: {
         x: { ticks: { color: "#333" } },
         y: {
-          ticks: { color: "#333", callback: v => v + "%" },
-          beginAtZero: true,
-          max: 100
+          ticks: { color: "#333", callback: v => v + " mm" },
+          beginAtZero: true
         }
       }
     }
   });
 }
 
-// ---------- Today ----------
 function loadToday() {
-  if (lat == null || lon == null) {
+  if (!lat || !lon) {
     document.getElementById('status').innerText = 'Waiting for location...';
     return;
   }
@@ -305,6 +280,7 @@ function loadToday() {
   fetch(url)
     .then(res => res.json())
     .then(data => {
+      cityName = data.city.name;
       const slice = Math.min(8, data.list.length);
       const today = [];
       for (let i = 0; i < slice; i++) {
@@ -318,23 +294,21 @@ function loadToday() {
           temp: item.main.temp,
           icon: item.weather[0].icon,
           desc,
-          rainChance: item.pop !== undefined ? (item.pop * 100).toFixed(0) : 0
+          rainMm: item.rain ? (item.rain['3h'] || 0) : 0
         });
       }
       displayCards(today);
       drawCharts(
         today.map(d => d.time),
         today.map(d => d.temp),
-        today.map(d => d.rainChance),
-        "Today's Hourly Weather"
+        today.map(d => d.rainMm)
       );
-      document.getElementById('status').innerText = "Today's hourly forecast loaded.";
+      document.getElementById('status').innerText = `${cityName}'s hourly forecast loaded.`;
     });
 }
 
-// ---------- Forecast ----------
 function loadForecast() {
-  if (lat == null || lon == null) {
+  if (!lat || !lon) {
     document.getElementById('status').innerText = 'Waiting for location...';
     return;
   }
@@ -343,6 +317,7 @@ function loadForecast() {
   fetch(url)
     .then(res => res.json())
     .then(data => {
+      cityName = data.city.name;
       const byDate = {};
       for (const item of data.list) {
         const dateKey = new Date(item.dt_txt).toLocaleDateString('en-IN');
@@ -354,7 +329,7 @@ function loadForecast() {
         return {
           date: dateKey,
           temp: item.main.temp,
-          rainChance: item.pop !== undefined ? (item.pop * 100).toFixed(0) : 0,
+          rainMm: item.rain ? (item.rain['3h'] || 0) : 0,
           icon: item.weather[0].icon,
           desc
         };
@@ -363,14 +338,12 @@ function loadForecast() {
       drawCharts(
         forecast.map(d => d.date),
         forecast.map(d => d.temp),
-        forecast.map(d => d.rainChance),
-        "5-Day Forecast"
+        forecast.map(d => d.rainMm)
       );
-      document.getElementById('status').innerText = "5-Day forecast loaded.";
+      document.getElementById('status').innerText = `${cityName}'s 5-Day forecast loaded.`;
     });
 }
 
-// ---------- Geolocation ----------
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
     pos => {
